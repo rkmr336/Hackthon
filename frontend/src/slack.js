@@ -1,8 +1,5 @@
 // Slack Integration for PulseDesk
-// NOTE: In production, NEVER expose tokens in frontend code.
-// Use Vercel Environment Variables instead.
-
-const SLACK_BOT_TOKEN = import.meta.env.VITE_SLACK_BOT_TOKEN || ''; // Token removed for security
+// Uses a Vercel serverless function proxy to avoid CORS issues.
 
 const CHANNELS = {
     allteam: 'C0BDLC9BMC2',      // allpulsedeskteam
@@ -17,12 +14,10 @@ async function postToSlack(channel, text, blocks = null) {
         const body = { channel, text };
         if (blocks) body.blocks = blocks;
 
-        const res = await fetch('https://slack.com/api/chat.postMessage', {
+        // Call our own Vercel serverless proxy (no CORS issues!)
+        const res = await fetch('/api/slack-notify', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
         });
         const data = await res.json();
