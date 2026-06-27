@@ -105,18 +105,35 @@ function TicketDetail({ user }) {
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-100">Leave a Reply</h3>
                         
-                        {/* AI Auto-Reply Feature */}
-                        {user?.role !== 'customer' && (
+                        <div className="flex gap-2">
                             <button 
                                 type="button"
-                                onClick={generateAIReply}
-                                disabled={isGenerating}
-                                className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                                onClick={async () => {
+                                    const db = JSON.parse(localStorage.getItem('tickets')) || [];
+                                    const tIndex = db.findIndex(t => t.id === parseInt(id));
+                                    if (tIndex > -1) {
+                                        db[tIndex].status = 'resolved';
+                                        localStorage.setItem('tickets', JSON.stringify(db));
+                                        fetchTicket();
+                                    }
+                                }}
+                                className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-600 transition-colors"
                             >
-                                <span>✨</span>
-                                {isGenerating ? 'Generating...' : 'AI Auto-Reply'}
+                                ✓ Mark as Resolved
                             </button>
-                        )}
+                            
+                            {user?.role !== 'customer' && (
+                                <button 
+                                    type="button"
+                                    onClick={generateAIReply}
+                                    disabled={isGenerating}
+                                    className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                                >
+                                    <span>✨</span>
+                                    {isGenerating ? 'Generating...' : 'AI Auto-Reply'}
+                                </button>
+                            )}
+                        </div>
                     </div>
                     
                     <form onSubmit={handleReply}>
