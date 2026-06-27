@@ -29,13 +29,16 @@ const api = {
             saveDB(db);
             return { data: { user, token: 'mock-jwt-token' } };
         }
-        if (url === '/login') {
+        if (url === '/login' || url === '/register') {
             let user = db.users.find(u => u.email === data.email);
             if (!user) {
-                user = { id: Date.now(), email: data.email, name: 'Demo User', role: 'admin' };
+                user = { id: Date.now(), email: data.email, name: data.role === 'customer' ? 'Demo Customer' : 'Demo Admin', role: data.role || 'admin' };
                 db.users.push(user);
-                saveDB(db);
+            } else {
+                // Update role for easy hackathon demo switching
+                user.role = data.role || 'admin';
             }
+            saveDB(db);
             return { data: { user, token: 'mock-jwt-token' } };
         }
         if (url === '/tickets') {

@@ -5,6 +5,7 @@ function Login({ setToken, setUser }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLogin, setIsLogin] = useState(true);
+    const [role, setRole] = useState('admin');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -14,7 +15,7 @@ function Login({ setToken, setUser }) {
         setError('');
         try {
             const endpoint = isLogin ? '/login' : '/register';
-            const res = await api.post(endpoint, { email, password });
+            const res = await api.post(endpoint, { email, password, role });
             const { token, user } = res.data;
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
@@ -36,7 +37,7 @@ function Login({ setToken, setUser }) {
 
             <div className="w-full max-w-md p-8 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_0_50px_rgba(16,185,129,0.15)] relative z-10 transform transition-all hover:border-white/20">
                 
-                <div className="text-center mb-10">
+                <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 mb-6 shadow-[0_0_20px_rgba(52,211,153,0.5)]">
                         <span className="text-3xl font-extrabold text-white">P</span>
                     </div>
@@ -44,7 +45,24 @@ function Login({ setToken, setUser }) {
                     <p className="text-emerald-400/80 font-medium text-sm">Welcome to the future of support</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex bg-black/60 rounded-xl p-1 mb-8 shadow-inner border border-white/5">
+                    <button 
+                        type="button"
+                        onClick={() => setRole('admin')}
+                        className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${role === 'admin' ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                        👨‍💻 Admin Login
+                    </button>
+                    <button 
+                        type="button"
+                        onClick={() => setRole('customer')}
+                        className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${role === 'customer' ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                        🙋‍♂️ Customer Login
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-5">
                     {error && (
                         <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl text-center font-medium backdrop-blur-sm">
                             {error}

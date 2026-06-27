@@ -90,12 +90,14 @@ function Dashboard({ user }) {
                                 document.getElementById('tickets-section')?.scrollIntoView({ behavior: 'smooth' });
                             }} className="w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-white/5 px-4 py-3 rounded-2xl font-medium transition-all">
                                 <span className="w-2 h-2 rounded-full border-2 border-slate-600"></span>
-                                All Tickets
+                                {user?.role === 'customer' ? 'My Tickets' : 'All Tickets'}
                             </button>
-                            <button onClick={() => setShowCreateForm(true)} className="w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-white/5 px-4 py-3 rounded-2xl font-medium transition-all text-left">
-                                <span className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center text-lg leading-none border border-white/10">+</span>
-                                Create Ticket
-                            </button>
+                            {user?.role === 'customer' && (
+                                <button onClick={() => setShowCreateForm(true)} className="w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-white/5 px-4 py-3 rounded-2xl font-medium transition-all text-left">
+                                    <span className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center text-lg leading-none border border-white/10">+</span>
+                                    Create Ticket
+                                </button>
+                            )}
                         </nav>
                     </div>
                 </div>
@@ -138,120 +140,124 @@ function Dashboard({ user }) {
                         </div>
                     </header>
 
-                    {/* Glass Metrics Cards */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-5 mb-10">
-                        <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-cyan-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]"></div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Total Open</p>
-                            <p className="text-5xl font-extrabold text-white mb-1 drop-shadow-md">{totalOpen}</p>
-                            <p className="text-xs text-slate-500 font-medium">Active queue</p>
-                        </div>
-                        <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Open</p>
-                            <p className="text-5xl font-extrabold text-white mb-1 drop-shadow-md">{open}</p>
-                            <p className="text-xs text-slate-500 font-medium">Unassigned</p>
-                        </div>
-                        <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-orange-500"></div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Pending</p>
-                            <p className="text-5xl font-extrabold text-white mb-1 drop-shadow-md">{pending}</p>
-                            <p className="text-xs text-slate-500 font-medium">Waiting on user</p>
-                        </div>
-                        <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-green-600"></div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Resolved</p>
-                            <p className="text-5xl font-extrabold text-emerald-400 mb-1 drop-shadow-md">{resolved}</p>
-                            <p className="text-xs text-slate-500 font-medium">Successfully closed</p>
-                        </div>
-                        <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-rose-600 shadow-[0_0_10px_rgba(239,68,68,0.8)]"></div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">SLA Breach</p>
-                            <p className="text-5xl font-extrabold text-red-400 mb-1 drop-shadow-md">0%</p>
-                            <p className="text-xs text-slate-500 font-medium">Perfect score</p>
-                        </div>
-                        <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-fuchsia-500 to-purple-600"></div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Avg Reply</p>
-                            <p className="text-5xl font-extrabold text-white mb-1 drop-shadow-md">5m</p>
-                            <p className="text-xs text-slate-500 font-medium">Lightning fast</p>
-                        </div>
-                    </div>
-
-                    {/* Middle Section (Charts) */}
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-10">
-                        
-                        {/* Smooth Area Chart instead of blocky Bar Chart */}
-                        <div className="xl:col-span-2 bg-white/5 backdrop-blur-lg p-6 rounded-3xl border border-white/10 shadow-xl relative overflow-hidden">
-                            <div className="absolute top-[-50px] right-[-50px] w-32 h-32 bg-indigo-500/20 blur-[50px] rounded-full"></div>
-                            <div className="flex justify-between items-center mb-6">
-                                <div>
-                                    <h3 className="text-lg font-bold text-white tracking-tight">Ticket Volume</h3>
-                                    <p className="text-xs text-slate-400">Last 7 days performance</p>
+                    {/* Admin-only Analytics */}
+                    {user?.role !== 'customer' && (
+                        <>
+                            {/* Glass Metrics Cards */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-5 mb-10">
+                                <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-cyan-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]"></div>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Total Open</p>
+                                    <p className="text-5xl font-extrabold text-white mb-1 drop-shadow-md">{totalOpen}</p>
+                                    <p className="text-xs text-slate-500 font-medium">Active queue</p>
                                 </div>
-                                <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">+12% Growth</div>
-                            </div>
-                            <div className="h-56 w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={dailyData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                                        <defs>
-                                            <linearGradient id="colorTickets" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
-                                                <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                                            </linearGradient>
-                                        </defs>
-                                        <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
-                                        <RechartsTooltip cursor={{stroke: '#ffffff20', strokeWidth: 1, strokeDasharray: '5 5'}} contentStyle={{backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', borderColor: '#ffffff20', color: '#f8fafc', borderRadius: '12px'}}/>
-                                        <Area type="monotone" dataKey="tickets" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorTickets)" />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
-
-                        {/* Priority Glowing Bars */}
-                        <div className="bg-white/5 backdrop-blur-lg p-6 rounded-3xl border border-white/10 shadow-xl flex flex-col justify-center">
-                            <h3 className="text-lg font-bold text-white mb-8 tracking-tight">Ticket Priority</h3>
-                            <div className="space-y-6">
-                                <div>
-                                    <div className="flex justify-between text-xs font-semibold text-slate-300 mb-2">
-                                        <span className="text-rose-400 tracking-wider uppercase">Urgent</span>
-                                        <span className="text-white bg-rose-500/20 px-2 py-0.5 rounded text-[10px] border border-rose-500/30">{priorityCounts.urgent}</span>
-                                    </div>
-                                    <div className="w-full bg-black/40 rounded-full h-2 shadow-inner border border-white/5">
-                                        <div className="bg-rose-500 h-2 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.8)]" style={{width: `${(priorityCounts.urgent / maxPriority) * 100}%`}}></div>
-                                    </div>
+                                <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Open</p>
+                                    <p className="text-5xl font-extrabold text-white mb-1 drop-shadow-md">{open}</p>
+                                    <p className="text-xs text-slate-500 font-medium">Unassigned</p>
                                 </div>
-                                <div>
-                                    <div className="flex justify-between text-xs font-semibold text-slate-300 mb-2">
-                                        <span className="text-orange-400 tracking-wider uppercase">High</span>
-                                        <span className="text-white bg-orange-500/20 px-2 py-0.5 rounded text-[10px] border border-orange-500/30">{priorityCounts.high}</span>
-                                    </div>
-                                    <div className="w-full bg-black/40 rounded-full h-2 shadow-inner border border-white/5">
-                                        <div className="bg-orange-500 h-2 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.8)]" style={{width: `${(priorityCounts.high / maxPriority) * 100}%`}}></div>
-                                    </div>
+                                <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-orange-500"></div>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Pending</p>
+                                    <p className="text-5xl font-extrabold text-white mb-1 drop-shadow-md">{pending}</p>
+                                    <p className="text-xs text-slate-500 font-medium">Waiting on user</p>
                                 </div>
-                                <div>
-                                    <div className="flex justify-between text-xs font-semibold text-slate-300 mb-2">
-                                        <span className="text-yellow-400 tracking-wider uppercase">Medium</span>
-                                        <span className="text-white bg-yellow-500/20 px-2 py-0.5 rounded text-[10px] border border-yellow-500/30">{priorityCounts.medium}</span>
-                                    </div>
-                                    <div className="w-full bg-black/40 rounded-full h-2 shadow-inner border border-white/5">
-                                        <div className="bg-yellow-400 h-2 rounded-full shadow-[0_0_10px_rgba(250,204,21,0.8)]" style={{width: `${(priorityCounts.medium / maxPriority) * 100}%`}}></div>
-                                    </div>
+                                <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-green-600"></div>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Resolved</p>
+                                    <p className="text-5xl font-extrabold text-emerald-400 mb-1 drop-shadow-md">{resolved}</p>
+                                    <p className="text-xs text-slate-500 font-medium">Successfully closed</p>
                                 </div>
-                                <div>
-                                    <div className="flex justify-between text-xs font-semibold text-slate-300 mb-2">
-                                        <span className="text-emerald-400 tracking-wider uppercase">Low</span>
-                                        <span className="text-white bg-emerald-500/20 px-2 py-0.5 rounded text-[10px] border border-emerald-500/30">{priorityCounts.low}</span>
-                                    </div>
-                                    <div className="w-full bg-black/40 rounded-full h-2 shadow-inner border border-white/5">
-                                        <div className="bg-emerald-500 h-2 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.8)]" style={{width: `${(priorityCounts.low / maxPriority) * 100}%`}}></div>
-                                    </div>
+                                <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-rose-600 shadow-[0_0_10px_rgba(239,68,68,0.8)]"></div>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">SLA Breach</p>
+                                    <p className="text-5xl font-extrabold text-red-400 mb-1 drop-shadow-md">0%</p>
+                                    <p className="text-xs text-slate-500 font-medium">Perfect score</p>
+                                </div>
+                                <div className="bg-white/5 backdrop-blur-lg p-5 rounded-3xl border border-white/10 hover:border-white/20 shadow-xl relative overflow-hidden group transition-all hover:-translate-y-1">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-fuchsia-500 to-purple-600"></div>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Avg Reply</p>
+                                    <p className="text-5xl font-extrabold text-white mb-1 drop-shadow-md">5m</p>
+                                    <p className="text-xs text-slate-500 font-medium">Lightning fast</p>
                                 </div>
                             </div>
-                        </div>
 
-                    </div>
+                            {/* Middle Section (Charts) */}
+                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-10">
+                                
+                                {/* Smooth Area Chart instead of blocky Bar Chart */}
+                                <div className="xl:col-span-2 bg-white/5 backdrop-blur-lg p-6 rounded-3xl border border-white/10 shadow-xl relative overflow-hidden">
+                                    <div className="absolute top-[-50px] right-[-50px] w-32 h-32 bg-indigo-500/20 blur-[50px] rounded-full"></div>
+                                    <div className="flex justify-between items-center mb-6">
+                                        <div>
+                                            <h3 className="text-lg font-bold text-white tracking-tight">Ticket Volume</h3>
+                                            <p className="text-xs text-slate-400">Last 7 days performance</p>
+                                        </div>
+                                        <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">+12% Growth</div>
+                                    </div>
+                                    <div className="h-56 w-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <AreaChart data={dailyData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                                                <defs>
+                                                    <linearGradient id="colorTickets" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                                                    </linearGradient>
+                                                </defs>
+                                                <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+                                                <RechartsTooltip cursor={{stroke: '#ffffff20', strokeWidth: 1, strokeDasharray: '5 5'}} contentStyle={{backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', borderColor: '#ffffff20', color: '#f8fafc', borderRadius: '12px'}}/>
+                                                <Area type="monotone" dataKey="tickets" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorTickets)" />
+                                            </AreaChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+
+                                {/* Priority Glowing Bars */}
+                                <div className="bg-white/5 backdrop-blur-lg p-6 rounded-3xl border border-white/10 shadow-xl flex flex-col justify-center">
+                                    <h3 className="text-lg font-bold text-white mb-8 tracking-tight">Ticket Priority</h3>
+                                    <div className="space-y-6">
+                                        <div>
+                                            <div className="flex justify-between text-xs font-semibold text-slate-300 mb-2">
+                                                <span className="text-rose-400 tracking-wider uppercase">Urgent</span>
+                                                <span className="text-white bg-rose-500/20 px-2 py-0.5 rounded text-[10px] border border-rose-500/30">{priorityCounts.urgent}</span>
+                                            </div>
+                                            <div className="w-full bg-black/40 rounded-full h-2 shadow-inner border border-white/5">
+                                                <div className="bg-rose-500 h-2 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.8)]" style={{width: `${(priorityCounts.urgent / maxPriority) * 100}%`}}></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="flex justify-between text-xs font-semibold text-slate-300 mb-2">
+                                                <span className="text-orange-400 tracking-wider uppercase">High</span>
+                                                <span className="text-white bg-orange-500/20 px-2 py-0.5 rounded text-[10px] border border-orange-500/30">{priorityCounts.high}</span>
+                                            </div>
+                                            <div className="w-full bg-black/40 rounded-full h-2 shadow-inner border border-white/5">
+                                                <div className="bg-orange-500 h-2 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.8)]" style={{width: `${(priorityCounts.high / maxPriority) * 100}%`}}></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="flex justify-between text-xs font-semibold text-slate-300 mb-2">
+                                                <span className="text-yellow-400 tracking-wider uppercase">Medium</span>
+                                                <span className="text-white bg-yellow-500/20 px-2 py-0.5 rounded text-[10px] border border-yellow-500/30">{priorityCounts.medium}</span>
+                                            </div>
+                                            <div className="w-full bg-black/40 rounded-full h-2 shadow-inner border border-white/5">
+                                                <div className="bg-yellow-400 h-2 rounded-full shadow-[0_0_10px_rgba(250,204,21,0.8)]" style={{width: `${(priorityCounts.medium / maxPriority) * 100}%`}}></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="flex justify-between text-xs font-semibold text-slate-300 mb-2">
+                                                <span className="text-emerald-400 tracking-wider uppercase">Low</span>
+                                                <span className="text-white bg-emerald-500/20 px-2 py-0.5 rounded text-[10px] border border-emerald-500/30">{priorityCounts.low}</span>
+                                            </div>
+                                            <div className="w-full bg-black/40 rounded-full h-2 shadow-inner border border-white/5">
+                                                <div className="bg-emerald-500 h-2 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.8)]" style={{width: `${(priorityCounts.low / maxPriority) * 100}%`}}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
 
                     {/* Create Ticket Modal */}
                     {showCreateForm && (
@@ -288,7 +294,7 @@ function Dashboard({ user }) {
                     {/* Futuristic Ticket Table */}
                     <div id="tickets-section" className="bg-white/5 backdrop-blur-lg rounded-3xl border border-white/10 shadow-xl overflow-hidden relative">
                         <div className="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
-                            <h3 className="text-sm font-bold text-white tracking-widest uppercase">Active Tickets</h3>
+                            <h3 className="text-sm font-bold text-white tracking-widest uppercase">{user?.role === 'customer' ? 'My Tickets' : 'Active Tickets'}</h3>
                             <div className="flex gap-4 items-center">
                                 <select 
                                     value={statusFilter} 
@@ -306,7 +312,7 @@ function Dashboard({ user }) {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <tbody className="divide-y divide-white/5">
-                                    {tickets.map(ticket => (
+                                    {(user?.role === 'customer' ? tickets.filter(t => t.requester?.email === user.email) : tickets).map(ticket => (
                                         <tr key={ticket.id} className="hover:bg-white/10 transition-all cursor-pointer group" onClick={() => navigate(`/tickets/${ticket.id}`)}>
                                             <td className="px-6 py-5">
                                                 <div className="flex items-center gap-5">
