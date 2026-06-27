@@ -86,7 +86,9 @@ function Dashboard({ user }) {
                                 <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
                                 Dashboard
                             </button>
-                            <button onClick={() => navigate('/')} className="w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-white/5 px-4 py-3 rounded-2xl font-medium transition-all">
+                            <button onClick={() => {
+                                document.getElementById('tickets-section')?.scrollIntoView({ behavior: 'smooth' });
+                            }} className="w-full flex items-center gap-3 text-slate-400 hover:text-white hover:bg-white/5 px-4 py-3 rounded-2xl font-medium transition-all">
                                 <span className="w-2 h-2 rounded-full border-2 border-slate-600"></span>
                                 All Tickets
                             </button>
@@ -129,7 +131,7 @@ function Dashboard({ user }) {
                             <p className="text-emerald-400/70 text-sm font-medium">Real-time support operations</p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <button className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-yellow-500/80 hover:bg-white/10 hover:text-yellow-400 transition-all shadow-lg backdrop-blur-md relative group">
+                            <button onClick={() => alert('No new notifications!')} className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-yellow-500/80 hover:bg-white/10 hover:text-yellow-400 transition-all shadow-lg backdrop-blur-md relative group cursor-pointer">
                                 <span className="text-xl group-hover:animate-bounce">🔔</span>
                                 <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 border-2 border-[#0a0a0a] rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
                             </button>
@@ -284,12 +286,22 @@ function Dashboard({ user }) {
                     )}
 
                     {/* Futuristic Ticket Table */}
-                    <div className="bg-white/5 backdrop-blur-lg rounded-3xl border border-white/10 shadow-xl overflow-hidden relative">
+                    <div id="tickets-section" className="bg-white/5 backdrop-blur-lg rounded-3xl border border-white/10 shadow-xl overflow-hidden relative">
                         <div className="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
                             <h3 className="text-sm font-bold text-white tracking-widest uppercase">Active Tickets</h3>
-                            <button className="text-xs bg-white/10 px-3 py-1.5 rounded-full text-emerald-400 hover:bg-white/20 hover:text-emerald-300 font-bold transition-all flex items-center gap-2">
-                                View History <span>&rarr;</span>
-                            </button>
+                            <div className="flex gap-4 items-center">
+                                <select 
+                                    value={statusFilter} 
+                                    onChange={(e) => setStatusFilter(e.target.value)}
+                                    className="bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                                >
+                                    <option value="">All Statuses</option>
+                                    <option value="open">Open</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="resolved">Resolved</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">

@@ -112,6 +112,21 @@ function TicketDetail({ user }) {
                                     const db = JSON.parse(localStorage.getItem('tickets')) || [];
                                     const tIndex = db.findIndex(t => t.id === parseInt(id));
                                     if (tIndex > -1) {
+                                        db[tIndex].status = 'closed';
+                                        localStorage.setItem('tickets', JSON.stringify(db));
+                                        fetchTicket();
+                                    }
+                                }}
+                                className="flex items-center gap-2 bg-slate-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-slate-500 transition-colors"
+                            >
+                                ✖ Close Ticket
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={async () => {
+                                    const db = JSON.parse(localStorage.getItem('tickets')) || [];
+                                    const tIndex = db.findIndex(t => t.id === parseInt(id));
+                                    if (tIndex > -1) {
                                         db[tIndex].status = 'resolved';
                                         localStorage.setItem('tickets', JSON.stringify(db));
                                         fetchTicket();
