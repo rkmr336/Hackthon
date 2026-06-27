@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        
+    - name: Install Dependencies
+      working-directory: ./backend
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      
+    - name: Copy .env
+      working-directory: ./backend
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      
+    - name: Generate key
+      working-directory: ./backend
+      run: php artisan key:generate
+      
+    - name: Run Migrations
+      working-directory: ./backend
+      run: php artisan migrate --force
+      
+    - name: Run Tests
+      working-directory: ./backend
+      run: php artisan test
