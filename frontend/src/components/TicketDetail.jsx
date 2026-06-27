@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api';
+import { notifyAIReply, notifyTicketResolved, notifyTicketClosed, notifyTicketReply } from '../slack';
 
 function TicketDetail({ user }) {
     const { id } = useParams();
@@ -51,8 +52,10 @@ function TicketDetail({ user }) {
             if (index >= aiResponse.length) {
                 clearInterval(interval);
                 setIsGenerating(false);
+                // 🔔 Notify Slack #humanreview channel
+                notifyAIReply(ticket, aiResponse);
             }
-        }, 15); // Typing speed
+        }, 15);
     };
 
     if (!ticket) return <div className="p-8 text-center text-gray-500 dark:text-gray-400">Loading...</div>;
@@ -114,6 +117,7 @@ function TicketDetail({ user }) {
                                     if (tIndex > -1) {
                                         db[tIndex].status = 'closed';
                                         localStorage.setItem('tickets', JSON.stringify(db));
+                                        notifyTicketClosed(ticket, user);
                                         fetchTicket();
                                     }
                                 }}
@@ -129,6 +133,7 @@ function TicketDetail({ user }) {
                                     if (tIndex > -1) {
                                         db[tIndex].status = 'resolved';
                                         localStorage.setItem('tickets', JSON.stringify(db));
+                                        notifyTicketResolved(ticket, user);
                                         fetchTicket();
                                     }
                                 }}

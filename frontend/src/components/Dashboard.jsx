@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import api from '../api';
+import { notifyNewTicket } from '../slack';
 
 function Dashboard({ user }) {
     const [tickets, setTickets] = useState([]);
@@ -32,7 +33,10 @@ function Dashboard({ user }) {
     const handleCreateTicket = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/tickets', newTicket);
+            const res = await api.post('/tickets', newTicket);
+            const createdTicket = res.data || { ...newTicket, id: Date.now() };
+            // 🔔 Slack notification
+            notifyNewTicket(createdTicket, user);
             setShowCreateForm(false);
             setNewTicket({ subject: '', description: '' });
             fetchTickets();
