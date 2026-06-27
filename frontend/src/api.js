@@ -32,12 +32,25 @@ const api = {
         if (url === '/login') {
             let user = db.users.find(u => u.email === data.email);
             if (!user) {
-                // Auto-create user for hackathon demo if they don't exist
                 user = { id: Date.now(), email: data.email, name: 'Demo User', role: 'admin' };
                 db.users.push(user);
                 saveDB(db);
             }
             return { data: { user, token: 'mock-jwt-token' } };
+        }
+        if (url === '/tickets') {
+            const newTicket = {
+                id: Date.now(),
+                subject: data.subject || 'New Ticket',
+                description: data.description || '',
+                status: 'open',
+                priority: 'medium',
+                requester: { name: db.users[0]?.name || 'User' },
+                comments: []
+            };
+            db.tickets.unshift(newTicket);
+            saveDB(db);
+            return { data: newTicket };
         }
         if (url.includes('/comments')) {
             const ticketId = parseInt(url.split('/')[2]);

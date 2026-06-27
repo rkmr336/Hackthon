@@ -7,6 +7,8 @@ function Dashboard({ user }) {
     const [tickets, setTickets] = useState([]);
     const [statusFilter, setStatusFilter] = useState('');
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [newTicket, setNewTicket] = useState({ subject: '', description: '' });
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,6 +35,18 @@ function Dashboard({ user }) {
     const handleLogout = () => {
         localStorage.removeItem('token');
         window.location.reload();
+    };
+
+    const handleCreateTicket = async (e) => {
+        e.preventDefault();
+        try {
+            await api.post('/tickets', newTicket);
+            setShowCreateForm(false);
+            setNewTicket({ subject: '', description: '' });
+            fetchTickets();
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     // Calculate chart data
@@ -111,18 +125,53 @@ function Dashboard({ user }) {
                 {/* Tickets Table */}
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Recent Tickets</h2>
-                    <select 
-                        value={statusFilter} 
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="border dark:border-gray-600 rounded-xl px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                        <option value="">All Statuses</option>
-                        <option value="open">Open</option>
-                        <option value="pending">Pending</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
-                    </select>
+                    <div className="flex gap-4">
+                        <button 
+                            onClick={() => setShowCreateForm(true)}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium shadow-sm transition-colors"
+                        >
+                            + Create Ticket
+                        </button>
+                        <select 
+                            value={statusFilter} 
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="border dark:border-gray-600 rounded-xl px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            <option value="">All Statuses</option>
+                            <option value="open">Open</option>
+                            <option value="pending">Pending</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
                 </div>
+
+                {showCreateForm && (
+                    <div className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border dark:border-gray-700">
+                        <h3 className="text-lg font-bold mb-4 dark:text-white">Create New Ticket</h3>
+                        <form onSubmit={handleCreateTicket}>
+                            <input 
+                                type="text" 
+                                placeholder="Ticket Subject" 
+                                required
+                                value={newTicket.subject}
+                                onChange={e => setNewTicket({...newTicket, subject: e.target.value})}
+                                className="w-full border dark:border-gray-600 rounded-xl px-4 py-2 mb-4 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                            <textarea 
+                                placeholder="Describe your issue..." 
+                                required
+                                value={newTicket.description}
+                                onChange={e => setNewTicket({...newTicket, description: e.target.value})}
+                                className="w-full border dark:border-gray-600 rounded-xl px-4 py-2 mb-4 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white h-24 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                            <div className="flex gap-4">
+                                <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-medium transition-colors">Submit Ticket</button>
+                                <button type="button" onClick={() => setShowCreateForm(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                )}
 
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 overflow-hidden">
                     <table className="w-full text-left">
