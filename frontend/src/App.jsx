@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
+import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import TicketDetail from './components/TicketDetail';
 import api from './api';
@@ -28,14 +29,18 @@ function App() {
   }, [token]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50">Loading...</div>;
   }
 
   return (
     <BrowserRouter>
       <Routes>
         {!token ? (
-          <Route path="*" element={<Login setToken={setToken} setUser={setUser} />} />
+          <>
+            <Route path="/login" element={<Login setToken={setToken} setUser={setUser} />} />
+            <Route path="/register" element={<Register setToken={setToken} setUser={setUser} />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </>
         ) : (
           <>
             <Route path="/" element={<Dashboard user={user} />} />
