@@ -1,86 +1,109 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import api from '../api';
 
 function Login({ setToken, setUser }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLogin, setIsLogin] = useState(true);
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setIsLoading(true);
+        setError('');
         try {
-            const response = await api.post('/login', { email, password });
-            localStorage.setItem('token', response.data.token);
-            setToken(response.data.token);
-            setUser(response.data.user);
+            const endpoint = isLogin ? '/login' : '/register';
+            const res = await api.post(endpoint, { email, password });
+            const { token, user } = res.data;
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            setToken(token);
+            setUser(user);
         } catch (err) {
-            setError('Invalid credentials');
-            setLoading(false);
+            setError(err.response?.data?.message || 'Authentication failed');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-4">
-            <div className="w-full max-w-md bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-2xl shadow-2xl">
-                <div className="text-center mb-8">
-                    <h2 className="text-4xl font-extrabold text-white tracking-tight mb-2">PulseDesk</h2>
-                    <p className="text-white/80">Welcome back to your workspace</p>
-                </div>
+        <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-[#0a0a0a] to-zinc-950 relative overflow-hidden font-sans">
+            
+            {/* Background floating glow effects */}
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse" style={{ animationDelay: '1s' }}></div>
+
+            <div className="w-full max-w-md p-8 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_0_50px_rgba(16,185,129,0.15)] relative z-10 transform transition-all hover:border-white/20">
                 
-                {error && (
-                    <div className="bg-red-500/20 border border-red-500/50 text-white px-4 py-3 rounded-lg mb-6 text-sm">
-                        {error}
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 mb-6 shadow-[0_0_20px_rgba(52,211,153,0.5)]">
+                        <span className="text-3xl font-extrabold text-white">P</span>
                     </div>
-                )}
-                
-                <form onSubmit={handleLogin} className="space-y-5">
-                    <div>
-                        <label className="block text-white/90 text-sm font-medium mb-1">Work Email</label>
+                    <h2 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 tracking-tight mb-2">PulseDesk</h2>
+                    <p className="text-emerald-400/80 font-medium text-sm">Welcome to the future of support</p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {error && (
+                        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl text-center font-medium backdrop-blur-sm">
+                            {error}
+                        </div>
+                    )}
+                    
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Work Email</label>
                         <input 
                             type="email" 
+                            required 
                             value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/40 transition-all"
-                            placeholder="john@acme.com"
-                            required
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-3.5 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 placeholder-slate-600 transition-all shadow-inner"
+                            placeholder="admin@acme.com"
                         />
                     </div>
                     
-                    <div>
-                        <label className="block text-white/90 text-sm font-medium mb-1">Password</label>
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Password</label>
                         <input 
                             type="password" 
+                            required 
                             value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/40 transition-all"
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-3.5 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 placeholder-slate-600 transition-all shadow-inner"
                             placeholder="••••••••"
-                            required
                         />
                     </div>
                     
                     <button 
                         type="submit" 
-                        disabled={loading}
-                        className="w-full bg-white text-indigo-600 font-bold py-3 rounded-xl hover:bg-opacity-90 transition-all mt-4 transform hover:scale-[1.02] active:scale-[0.98]"
+                        disabled={isLoading}
+                        className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-white py-3.5 rounded-xl font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 flex justify-center items-center gap-2 mt-4"
                     >
-                        {loading ? 'Logging in...' : 'Login'}
+                        {isLoading ? (
+                            <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                        ) : (
+                            isLogin ? 'Access Workspace' : 'Create Workspace'
+                        )}
                     </button>
                 </form>
 
-                <div className="mt-8 text-center border-t border-white/10 pt-6">
-                    <p className="text-white/70 text-sm">
-                        Don't have an account?{' '}
-                        <Link to="/register" className="text-white font-bold hover:underline">
-                            Create a workspace
-                        </Link>
-                    </p>
-                    <p className="text-white/50 text-xs mt-4">
-                        (Demo credentials: admin@acme.com / password)
+                <div className="mt-8 text-center">
+                    <p className="text-slate-400 text-sm">
+                        {isLogin ? "Don't have an account?" : "Already have an account?"}
+                        <button 
+                            onClick={() => { setIsLogin(!isLogin); setError(''); }}
+                            className="ml-2 text-emerald-400 font-bold hover:text-emerald-300 transition-colors"
+                        >
+                            {isLogin ? 'Sign up' : 'Log in'}
+                        </button>
                     </p>
                 </div>
+            </div>
+            
+            {/* Minimal footer branding */}
+            <div className="absolute bottom-6 text-slate-500 text-xs font-medium uppercase tracking-[0.2em] opacity-50">
+                PulseDesk • v2.0 Beta
             </div>
         </div>
     );
