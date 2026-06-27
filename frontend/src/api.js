@@ -32,11 +32,19 @@ const api = {
         if (url === '/login' || url === '/register') {
             let user = db.users.find(u => u.email === data.email);
             if (!user) {
-                user = { id: Date.now(), email: data.email, name: data.role === 'customer' ? 'Demo Customer' : 'Demo Admin', role: data.role || 'admin' };
+                user = { 
+                    id: Date.now(), 
+                    email: data.email, 
+                    name: data.name || (data.role === 'customer' ? 'Demo Customer' : 'Demo Admin'), 
+                    company: data.company || '',
+                    role: data.role || 'admin' 
+                };
                 db.users.push(user);
             } else {
-                // Update role for easy hackathon demo switching
-                user.role = data.role || 'admin';
+                // Update role & name if provided
+                user.role = data.role || user.role;
+                if (data.name) user.name = data.name;
+                if (data.company) user.company = data.company;
             }
             saveDB(db);
             return { data: { user, token: 'mock-jwt-token' } };

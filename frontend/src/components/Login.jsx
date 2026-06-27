@@ -4,6 +4,8 @@ import api from '../api';
 function Login({ setToken, setUser }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [company, setCompany] = useState('');
     const [isLogin, setIsLogin] = useState(true);
     const [role, setRole] = useState('admin');
     const [error, setError] = useState('');
@@ -15,7 +17,7 @@ function Login({ setToken, setUser }) {
         setError('');
         try {
             const endpoint = isLogin ? '/login' : '/register';
-            const res = await api.post(endpoint, { email, password, role });
+            const res = await api.post(endpoint, { email, password, role, name: name || undefined, company: company || undefined });
             const { token, user } = res.data;
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
@@ -62,22 +64,55 @@ function Login({ setToken, setUser }) {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     {error && (
                         <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl text-center font-medium backdrop-blur-sm">
                             {error}
                         </div>
                     )}
+
+                    {/* Signup-only extra fields */}
+                    {!isLogin && (
+                        <>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Full Name</label>
+                                    <input 
+                                        type="text"
+                                        required
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 placeholder-slate-600 transition-all shadow-inner"
+                                        placeholder={role === 'admin' ? 'Alex Admin' : 'Rahul Kumar'}
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                                        {role === 'admin' ? 'Company' : 'Phone'}
+                                    </label>
+                                    <input 
+                                        type="text"
+                                        value={company}
+                                        onChange={(e) => setCompany(e.target.value)}
+                                        className="w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 placeholder-slate-600 transition-all shadow-inner"
+                                        placeholder={role === 'admin' ? 'Acme Corp' : '+91 9876543210'}
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    )}
                     
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Work Email</label>
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                            {role === 'admin' && !isLogin ? 'Work Email' : 'Email'}
+                        </label>
                         <input 
                             type="email" 
                             required 
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-3.5 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 placeholder-slate-600 transition-all shadow-inner"
-                            placeholder="admin@acme.com"
+                            placeholder={role === 'admin' ? 'admin@acme.com' : 'you@example.com'}
                         />
                     </div>
                     
@@ -92,16 +127,23 @@ function Login({ setToken, setUser }) {
                             placeholder="••••••••"
                         />
                     </div>
+
+                    {!isLogin && (
+                        <p className="text-[11px] text-slate-500 px-1">
+                            By signing up you agree to our{' '}
+                            <span className="text-emerald-400 cursor-pointer hover:underline">Terms of Service</span>.
+                        </p>
+                    )}
                     
                     <button 
                         type="submit" 
                         disabled={isLoading}
-                        className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-white py-3.5 rounded-xl font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 flex justify-center items-center gap-2 mt-4"
+                        className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-white py-3.5 rounded-xl font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 flex justify-center items-center gap-2 mt-2"
                     >
                         {isLoading ? (
                             <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                         ) : (
-                            isLogin ? 'Access Workspace' : 'Create Workspace'
+                            isLogin ? 'Access Workspace' : 'Create Account →'
                         )}
                     </button>
                 </form>
