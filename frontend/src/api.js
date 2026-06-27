@@ -64,6 +64,11 @@ const api = {
                     user: { name: db.users[0]?.name || 'Admin User' },
                     created_at: new Date().toISOString()
                 });
+                
+                // Auto-update ticket status when admin replies
+                db.tickets[ticketIndex].status = 'pending';
+                db.tickets[ticketIndex].assignee = { name: db.users[0]?.name || 'Admin User' };
+                
                 saveDB(db);
             }
             return { data: { message: 'success' } };
