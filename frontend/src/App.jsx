@@ -13,16 +13,31 @@ function App() {
 
   useEffect(() => {
     if (token) {
-      api.get('/user')
-        .then(res => {
-          setUser(res.data);
+      // Load user from localStorage (mock API)
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
           setLoading(false);
-        })
-        .catch(() => {
+        } catch {
           localStorage.removeItem('token');
+          localStorage.removeItem('user');
           setToken(null);
           setLoading(false);
-        });
+        }
+      } else {
+        // Fallback: try API
+        api.get('/user')
+          .then(res => {
+            setUser(res.data);
+            setLoading(false);
+          })
+          .catch(() => {
+            localStorage.removeItem('token');
+            setToken(null);
+            setLoading(false);
+          });
+      }
     } else {
       setLoading(false);
     }

@@ -129,8 +129,12 @@ function Dashboard({ user }) {
                     {/* Header */}
                     <header className="flex justify-between items-end mb-10">
                         <div>
-                            <h2 className="text-4xl font-extrabold text-white mb-2 tracking-tight">Overview</h2>
-                            <p className="text-emerald-400/70 text-sm font-medium">Real-time support operations</p>
+                            <h2 className="text-4xl font-extrabold text-white mb-2 tracking-tight">
+                                {user?.role === 'customer' ? 'My Support' : 'Overview'}
+                            </h2>
+                            <p className="text-emerald-400/70 text-sm font-medium">
+                                {user?.role === 'customer' ? `Welcome, ${user?.name || 'Customer'} 👋` : 'Real-time support operations'}
+                            </p>
                         </div>
                         <div className="flex items-center gap-4">
                             <button onClick={() => alert('No new notifications!')} className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-yellow-500/80 hover:bg-white/10 hover:text-yellow-400 transition-all shadow-lg backdrop-blur-md relative group cursor-pointer">
